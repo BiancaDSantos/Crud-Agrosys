@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agrosys - Clientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="src/assets/css/styles.css">
+</head>
+
+<body class="pb-5">
+
+    <nav class="navbar navbar-expand-lg glass-card rounded-0 mb-5 sticky-top fade-in-up">
+        <div class="container-fluid px-4">
+            <span class="navbar-brand fw-bold text-primary"><i class="bi bi-people-fill me-2"></i> Agrosys</span>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btn-logout">
+                Sair <i class="bi bi-box-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+
+            <div class="col-lg-4 fade-in-up delay-1">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-person-plus text-primary me-2"></i> Novo Cliente</h5>
+
+                    <form id="form-cliente">
+                        <div class="mb-3">
+                            <label class="form-label small">Nome Completo</label>
+                            <input type="text" class="form-control" id="input-nome" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label small">CPF</label>
+                                <input type="text" class="form-control" id="input-cpf" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Data Nasc.</label>
+                                <input type="date" class="form-control" id="input-nascimento" required>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label class="form-label small">Telefone</label>
+                                <input type="text" class="form-control" id="input-telefone">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Celular</label>
+                                <input type="text" class="form-control" id="input-celular" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Cadastrar Cliente</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8 fade-in-up delay-2">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0"><i class="bi bi-list-task text-primary me-2"></i> Lista de Clientes</h5>
+                        <div>
+                            <button id="btn-export-db" class="btn btn-sm btn-outline-secondary rounded-pill me-2"><i
+                                    class="bi bi-cloud-download"></i> Exportar</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>Celular</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-clientes-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4.2.2/dist/alasql.min.js"></script>
+    <script type="module">
+        import { ClientController } from './src/controllers/ClientController.js';
+        import { AuthController } from './src/controllers/AuthController.js';
+        import { SettingsController } from './src/controllers/SettingsController.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ClientController.init();
+            AuthController.init();
+            SettingsController.init();
+        });
+    </script>
+</body>
+
+</html>

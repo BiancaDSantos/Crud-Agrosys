@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agrosys - Endereços</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="src/assets/css/styles.css">
+</head>
+
+<body class="pb-5">
+
+    <nav class="navbar navbar-expand-lg glass-card rounded-0 mb-5 sticky-top fade-in-up">
+        <div class="container-fluid px-4">
+            <a href="clients.html" class="btn btn-link text-decoration-none text-dark"><i
+                    class="bi bi-arrow-left me-2"></i> Voltar aos Clientes</a>
+            <span class="navbar-brand fw-bold text-primary mx-auto"><i class="bi bi-geo-alt-fill me-2"></i> Gestão de
+                Endereços</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+
+            <div class="col-lg-4 fade-in-up delay-1">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-map text-primary me-2"></i> Adicionar Endereço</h5>
+
+                    <form id="form-endereco">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label small">CEP (Busca Automática)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="input-cep" placeholder="00000-000"
+                                        required>
+                                    <span class="input-group-text bg-white"><i
+                                            class="bi bi-search text-muted"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small">Rua / Logradouro</label>
+                            <input type="text" class="form-control" id="input-rua" readonly required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small">Bairro</label>
+                            <input type="text" class="form-control" id="input-bairro" readonly required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label class="form-label small">Estado (UF)</label>
+                                <select class="form-select" id="input-estado" required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Cidade</label>
+                                <select class="form-select" id="input-cidade" disabled required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 d-none">
+                            <input type="text" id="input-pais" value="Brasil">
+                        </div>
+
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" role="switch" id="checkbox-principal">
+                            <label class="form-check-label small fw-semibold" for="checkbox-principal">Definir como
+                                Endereço Principal</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Salvar Endereço</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8 fade-in-up delay-2">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-houses text-primary me-2"></i> Endereços Cadastrados</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Logradouro</th>
+                                    <th>Localidade</th>
+                                    <th>CEP</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-enderecos-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4.2.2/dist/alasql.min.js"></script>
+    <script type="module">
+        import { AddressController } from './src/controllers/AddressController.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            AddressController.init();
+        });
+    </script>
+</body>
+
+</html>
