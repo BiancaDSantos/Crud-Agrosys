@@ -4,16 +4,17 @@ export class Address {
         this.cliente_id = parseInt(cliente_id, 10);
         this.cep = cep;
         this.rua = rua;
+        this.numero = numero;
+        this.complemento = complemento;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
         this.pais = pais || 'Brasil';
         this.is_principal = Boolean(is_principal);
-
         this.validate();
     }
 
-    validate() {
+    alidate() {
         if (isNaN(this.cliente_id) || this.cliente_id <= 0) {
             throw new Error("Identificador do cliente inválido ou não informado.");
         }
@@ -25,6 +26,7 @@ export class Address {
 
         const requiredFields = {
             'Rua': this.rua,
+            'Número': this.numero,
             'Bairro': this.bairro,
             'Cidade': this.cidade,
             'Estado': this.estado,
@@ -32,7 +34,7 @@ export class Address {
         };
 
         for (const [fieldName, value] of Object.entries(requiredFields)) {
-            if (!value || value.trim().length === 0) {
+            if (!value || String(value).trim().length === 0) {
                 throw new Error(`O campo obrigatório "${fieldName}" não pode estar vazio.`);
             }
         }
@@ -43,6 +45,8 @@ export class Address {
             cliente_id: this.cliente_id,
             cep: this.cep.replace(/\D/g, ''),
             rua: this.rua.trim(),
+            numero: String(this.numero).trim(),
+            complemento: this.complemento ? this.complemento.trim() : '',
             bairro: this.bairro.trim(),
             cidade: this.cidade.trim(),
             estado: this.estado.trim(),

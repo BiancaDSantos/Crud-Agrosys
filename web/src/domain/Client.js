@@ -19,12 +19,51 @@ export class Client {
             throw new Error("A data de nascimento é obrigatória.");
         }
 
+        this.validarIdade();
+
         if (!this.telefone && !this.celular) {
             throw new Error("É obrigatório informar pelo menos um telefone ou celular.");
         }
 
         if (!this.isCpfValido(this.cpf)) {
             throw new Error("O CPF informado é matematicamente inválido.");
+        }
+    }
+
+    validarIdade() {
+        const dataNascimento = new Date(`${this.data_nascimento}T00:00:00`);
+
+        if (isNaN(dataNascimento.getTime())) {
+            throw new Error("A data de nascimento informada é inválida.");
+        }
+
+        const hoje = new Date();
+
+        if (dataNascimento > hoje) {
+            throw new Error("A data de nascimento não pode ser uma data futura.");
+        }
+
+        let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+        const mesAtual = hoje.getMonth();
+        const diaAtual = hoje.getDate();
+
+        const mesNascimento = dataNascimento.getMonth();
+        const diaNascimento = dataNascimento.getDate();
+
+        const aindaNaoFezAniversarioEsteAno =
+            mesAtual < mesNascimento ||
+            (mesAtual === mesNascimento && diaAtual < diaNascimento);
+
+        if (aindaNaoFezAniversarioEsteAno) {
+            idade--;
+        }
+
+        if (idade < 18) {
+            throw new Error("Não é permitido cadastrar clientes menores de 18 anos.");
+        }
+
+        if (idade > 100) {
+            throw new Error("Não é permitido cadastrar clientes com mais de 100 anos.");
         }
     }
 

@@ -6,66 +6,41 @@ export class SecureUserRepository {
     static tableName = 'usuarios';
 
     /**
-     * Salva um novo usuário. 
-     * Username é "hasheado" para manter a privacidade e permitir a busca exata no login.
-     * @param {Object} userData - { username, password_salt, password_hash }
+     * Salva um novo usuário.
+     * @param {Object} userData - { username_hash, username, password_salt, password_hash }
      */
     static async create(userData) {
+        const existingUser = await this.findByUsername(userData.username);
 
-        console.log("🔍 Dados chegando no Repositório:", userData);
+        if (existingUser) {
+            throw new Error('Não foi possível realizar o cadastro. O nome de usuário já está em uso.');
+        }
 
-        const userHash = await EncryptionService.hash(userData.username.toLowerCase());
-
-        const dataToInsert = {
-            username_hash: userHash,
-            username: userData.username,
-            password_salt: userData.password_salt,
-            password_hash: userData.password_hash
-        };
-
-        console.log("🚀 Dados formatados para o banco:", dataToInsert);
-
-        return QueryBuilder.insert(this.tableName, dataToInsert);
+        return await QueryBuilder.insert(this.tableName, userData);
     }
 
     /**
-     * Busca as credenciais de um usuário pelo seu nome de usuário.
+     * Busca as credenciais de um usuário pelo hash do nome de usuário.
      * @param {string} username 
      */
     static async findByUsername(username) {
-        console.log(`🔎 1. Iniciando busca pelo usuário: "${username}"`);
         
-        // Gera o hash
-        const usernameHash = await EncryptionService.hash(username.toLowerCase());
-        console.log(`🔑 2. Hash esperado para a busca:`, usernameHash);
+        const normalizedUsername = username.trim().toLowerCase();
+        const usernameHash = await EncryptionService.hash(normalizedUsername);
 
-        // Busca no banco
-        const query = `SELECT * FROM ${this.tableName}`;
-        const allUsers = await alasql.promise(query);
+        const users = await QueryBuilder.select(this.tableName);
         
-        console.log(`📦 3. O que o AlaSQL achou no banco agora?`, allUsers);
+        if (!users || users.length === 0) return null;
 
-        if (!allUsers || allUsers.length === 0) {
-            console.warn(`⚠️ 4. ALERTA: O banco retornou VAZIO ou UNDEFINED para a leitura!`);
-            return null;
-        }
+        const existingUser = users.find((user) => {
+            return user && (
+                user.username_hash === usernameHash ||
+                user.username?.trim().toLowerCase() === normalizedUsername
+            );
+        });
 
-        const flatUsers = allUsers.map(wrapper => Object.values(wrapper)[0]);
+        return existingUser || null;
 
-        const user = flatUsers.find(u => u && u.username_hash === usernameHash);
-        
-        if (user) {
-
-            console.log(`✅ 5. Usuário ENCONTRADO no .find():`, user);
-
-        } else {
-
-            console.warn(`❌ 6. Nenhum usuário bateu com o hash procurado.`);
-            console.log(`Comparação -> O que tem no banco:`, allUsers.map(u => u.username_hash));
-
-        }
-
-        return user || null;
     }
 
 }

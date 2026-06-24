@@ -45,6 +45,19 @@
                             <input type="text" class="form-control" id="input-rua" readonly required>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-5">
+                                <label class="form-label small">Número</label>
+                                <input type="text" class="form-control" id="input-numero" placeholder="Ex: 123"
+                                    required>
+                            </div>
+                            <div class="col-7">
+                                <label class="form-label small">Complemento</label>
+                                <input type="text" class="form-control" id="input-complemento"
+                                    placeholder="Ex: Casa, Apto 2">
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label small">Bairro</label>
                             <input type="text" class="form-control" id="input-bairro" readonly required>
@@ -92,6 +105,7 @@
                                     <th>Localidade</th>
                                     <th>CEP</th>
                                     <th>Status</th>
+                                    <th class="text-end">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tabela-enderecos-body">
@@ -106,9 +120,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/alasql@4.2.2/dist/alasql.min.js"></script>
     <script type="module">
+        import { DataConfig } from './src/core/database/DataConfig.js';
+        import { AuthService } from './src/services/AuthService.js';
         import { AddressController } from './src/controllers/AddressController.js';
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await DataConfig.init();
+            await AuthService.restoreSessionKey();
             AddressController.init();
         });
     </script>

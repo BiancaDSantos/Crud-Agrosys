@@ -1,4 +1,5 @@
 import { AuthService } from '../services/AuthService.js';
+import { UIModal } from '../utils/UIModal.js';
 
 export class AuthController {
 
@@ -52,75 +53,29 @@ export class AuthController {
         }
     }
 
-    /**
-     * Processa a tentativa de Cadastro.
-     */
-    // static async handleRegister(event) {
-    //     event.preventDefault();
-
-    //     console.log("👉 O botão de cadastro foi clicado e o JS ouviu!");
-
-    //     const btnSubmit = event.target.querySelector('button[type="submit"]');
-    //     const originalText = this.#setLoadingState(btnSubmit, true);
-
-    //     const rawData = {
-    //         username: document.getElementById('register-username').value.trim(),
-    //         password: document.getElementById('register-password').value
-    //     };
-
-    //     // Validação de confirmação de senha apenas no Front-end (UX)
-    //     const confirmPassword = document.getElementById('register-confirm-password').value;
-    //     if (rawData.password !== confirmPassword) {
-    //         this.#showFeedback(event.target, 'As senhas não coincidem.', 'warning');
-    //         this.#setLoadingState(btnSubmit, false, originalText);
-    //         return;
-    //     }
-
-    //     try {
-    //         const response = await AuthService.register(rawData);
-
-    //         // Feedback de sucesso visual
-    //         this.#showFeedback(event.target, response.message, 'success');
-    //         event.target.reset(); // Limpa o formulário
-
-    //         // Opcional: Alterna visualmente para a aba de login (se usar Bootstrap Tabs)
-    //         const loginTab = document.getElementById('login-tab');
-    //         if (loginTab) loginTab.click();
-
-    //     } catch (error) {
-    //         this.#showFeedback(event.target, error.message, 'danger');
-    //     } finally {
-    //         this.#setLoadingState(btnSubmit, false, originalText);
-    //     }
-    // }
-
     static async handleRegister(event) {
+
         event.preventDefault();
-        console.log("🟢 1. Entrou no handleRegister");
 
         try {
             const rawData = {
                 username: document.getElementById('register-username').value.trim(),
                 password: document.getElementById('register-password').value
             };
-            console.log("🟢 2. Dados capturados:", rawData);
 
             const confirmPassword = document.getElementById('register-confirm-password').value;
             if (rawData.password !== confirmPassword) {
-                console.log("🟡 3. As senhas não batem");
                 alert("As senhas não coincidem.");
                 return;
             }
 
-            console.log("🟢 4. Chamando AuthService.register...");
             const response = await AuthService.register(rawData);
-            
-            console.log("🟢 5. Serviço finalizou com sucesso!");
+
             alert("SUCESSO: " + response.message);
 
         } catch (error) {
             console.error("🔴 ERRO CAPTURADO:", error);
-            alert("ERRO: " + error.message);
+            UIModal.showAlert("Atenção", error.message, "warning");
         }
     }
 

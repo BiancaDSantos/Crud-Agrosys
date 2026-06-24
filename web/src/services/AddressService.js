@@ -3,10 +3,6 @@ import { SecureAddressRepository } from '../repositories/SecureAddressRepository
 
 export class AddressService {
     
-    /**
-     * Orquestra a criação do endereço, garantindo a regra de exclusividade do endereço principal.
-     * @param {Object} rawData - Dados do formulário
-     */
     static async createEndereco(rawData) {
        
         const addressEntity = new Address(rawData);
@@ -25,8 +21,33 @@ export class AddressService {
         }
 
         await SecureAddressRepository.create(cleanData);
-        
-        SecureAddressRepository.clearCacheForClient(cleanData.cliente_id);
+
+        return { success: true };
+    }
+
+    static async criarEndereco(rawData) {
+        return this.createEndereco(rawData);
+    }
+
+    static async atualizarEndereco(id, rawData) {
+        const addressEntity = new Address(rawData);
+        const cleanData = addressEntity.getDadosSanitizados();
+
+        if (cleanData.is_principal) {
+            await SecureAddressRepository.removePrincipalFlag(cleanData.cliente_id);
+        }
+
+        await SecureAddressRepository.update(id, cleanData);
+
+        return { success: true };
+    }
+
+    static async excluirEndereco(id) {
+        if (!id) {
+            throw new Error("Identificador do endereço não informado.");
+        }
+
+        await SecureAddressRepository.delete(id);
 
         return { success: true };
     }

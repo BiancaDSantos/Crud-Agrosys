@@ -7,52 +7,45 @@ import { SessionManager } from '../core/security/SessionManager.js';
 
 export class AuthService {
 
-    /**
+     /**
      * Registra um novo usuário no sistema
      * @param {Object} rawData
      */
     static async register(rawData) {
         try {
-            // Extraímos os dados de dentro do objeto que veio do Controller!
-            const { username, password } = rawData;
 
-            console.log("1. Entrou no handleRegister");
-            console.log("2. Dados capturados:", { username, password });
+            const user = new User(rawData);
+            const { username, password } = user.toJSON();
+
+            const usernameHash = await EncryptionService.hash(username);
             
-            // ✅ VERIFICA SE O USUÁRIO JÁ EXISTE
             const existingUser = await SecureUserRepository.findByUsername(username);
             if (existingUser) {
-                throw new Error(`Usuário "${username}" já está cadastrado.`);
+                throw new Error('Não foi possível realizar o cadastro. O nome de usuário já está em uso.');
             }
-            console.log(`AQUUUUIIIIIIIII -> ${existingUser}`)
             
-            console.log("4. Chamado AuthService.register...");
-            
-            // Gera salt e hash da senha
             const salt = await EncryptionService.hash(username + Date.now().toString());
             const passwordHash = await EncryptionService.hash(password + salt);
             
             const userData = {
+                username_hash: usernameHash,
                 username: username,
                 password_salt: salt,
                 password_hash: passwordHash
             };
             
-            // Salva o usuário
             await SecureUserRepository.create(userData);
-            
-            console.log("5. Serviço finalizou com sucesso!");
             
             return { success: true, message: "Usuário registrado com sucesso!" };
             
         } catch (error) {
             console.error("Erro no registro:", error);
-            throw error; // Repassa o erro para o Controller exibir a tela rosa
+            throw error;
         }
     }
 
     /**
-     * Registra um novo usuário no sistema
+     * Realiza login do usuário
      * *@param {Object} rawData
      */
     static async login(rawData) {
@@ -87,11 +80,8 @@ export class AuthService {
      */
     static async restoreSessionKey() {
 
-        console.log("🔄 [RESTORE] 1. Iniciando tentativa de restauração da chave...");
         const keyData = SecureStorage.getItem('sessionKey');
-        console.log("📦 [RESTORE] 2. Dados brutos lidos do Storage:", keyData);
         if (!keyData) {
-
             console.warn("⚠️ [RESTORE] 3. ALERTA: Nenhuma chave 'sessionKey' foi encontrada no Storage! O login salvou a chave?");
             return;
         }
@@ -99,8 +89,6 @@ export class AuthService {
         try {
 
             const jwk = typeof keyData === 'string' ? JSON.parse(keyData) : keyData;
-
-            console.log("🧩 [RESTORE] 4. JWK convertido com sucesso:", jwk);
             
             const cryptoKey = await window.crypto.subtle.importKey(
                 "jwk",
@@ -112,7 +100,6 @@ export class AuthService {
             
             KeyManager.setKey(cryptoKey);
 
-            console.log("🛡️ [RESTORE] 5. CryptoKey recriado pelo navegador:", cryptoKey);
         } catch (error) {
             console.error("Erro ao restaurar a chave de sessão:", error);
         }
