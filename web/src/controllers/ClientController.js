@@ -1,6 +1,6 @@
 import { ClientService } from '../services/ClientService.js';
 
-export class ClienteController {
+export class ClientController {
     
     /**
      * Inicializa os ouvintes de eventos da tela de Clientes.
@@ -33,8 +33,7 @@ export class ClienteController {
 
         try {
             
-            await ClientService.criarCliente(clienteData);
-            
+            await ClientService.createClient(clienteData);
             
             alert('Cliente salvo com sucesso!');
             document.getElementById('form-cliente').reset();
@@ -42,6 +41,7 @@ export class ClienteController {
             
         } catch (error) {
             
+            console.error("Erro capturado no catch:", error); 
             alert(`Erro: ${error.message}`);
 
         }
@@ -55,6 +55,7 @@ export class ClienteController {
         try {
 
             const clientes = await ClientService.listarClientes();
+            console.log("👀 DEBUG: Estrutura dos clientes recebidos:", clientes);
 
             tbody.innerHTML = '';
 
@@ -90,6 +91,9 @@ export class ClienteController {
 
     
     static formatarCpfVisual(cpf) {
+
+        if (!cpf) return 'CPF Indisponível';
+
         const num = cpf.replace(/\D/g, '');
         return num.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }

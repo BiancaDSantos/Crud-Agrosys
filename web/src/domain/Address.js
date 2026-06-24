@@ -1,6 +1,5 @@
-// src/domain/Address.js
-
-export class Endereco {
+export class Address {
+    
     constructor({ cliente_id, cep, rua, bairro, cidade, estado, pais, is_principal }) {
         this.cliente_id = parseInt(cliente_id, 10);
         this.cep = cep;

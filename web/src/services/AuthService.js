@@ -61,10 +61,7 @@ export class AuthService {
         const { username, password } = user.toJSON();
 
         const userData = await SecureUserRepository.findByUsername(username);
-
-        if (!userData) {
-            throw new Error('Credenciais inválidas.');
-        }
+        if (!userData) throw new Error('Credenciais inválidas.');
 
         const attemptedHash = await EncryptionService.hash(password + userData.password_salt);
         if (attemptedHash !== userData.password_hash) {
@@ -73,13 +70,52 @@ export class AuthService {
 
         const cryptoKey = await EncryptionService.deriveKey(password, username);
 
-        KeyManager.setKey(cryptoKey);
+        const exportedKey = await window.crypto.subtle.exportKey("jwk", cryptoKey);
+        SecureStorage.setItem('sessionKey', JSON.stringify(exportedKey));
 
+        KeyManager.setKey(cryptoKey);
         SecureStorage.setItem('isAuthenticated', true);
         SecureStorage.setItem('currentUser', username);
         SessionManager.start();
 
         return { success: true, username };
+
+    }
+
+    /**
+     * Restaura a chave de criptografia da sessão após um reload de página
+     */
+    static async restoreSessionKey() {
+
+        console.log("🔄 [RESTORE] 1. Iniciando tentativa de restauração da chave...");
+        const keyData = SecureStorage.getItem('sessionKey');
+        console.log("📦 [RESTORE] 2. Dados brutos lidos do Storage:", keyData);
+        if (!keyData) {
+
+            console.warn("⚠️ [RESTORE] 3. ALERTA: Nenhuma chave 'sessionKey' foi encontrada no Storage! O login salvou a chave?");
+            return;
+        }
+
+        try {
+
+            const jwk = typeof keyData === 'string' ? JSON.parse(keyData) : keyData;
+
+            console.log("🧩 [RESTORE] 4. JWK convertido com sucesso:", jwk);
+            
+            const cryptoKey = await window.crypto.subtle.importKey(
+                "jwk",
+                jwk,
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            
+            KeyManager.setKey(cryptoKey);
+
+            console.log("🛡️ [RESTORE] 5. CryptoKey recriado pelo navegador:", cryptoKey);
+        } catch (error) {
+            console.error("Erro ao restaurar a chave de sessão:", error);
+        }
 
     }
 

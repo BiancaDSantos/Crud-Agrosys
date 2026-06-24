@@ -1,5 +1,6 @@
-import { Cliente } from '../domain/Cliente.js';
+import { Client } from '../domain/Client.js';
 import { SecureClientRepository } from '../repositories/SecureClientRepository.js';
+import { EncryptionService } from '../core/security/EncryptionService.js';
 
 export class ClientService {
     
@@ -9,13 +10,16 @@ export class ClientService {
      */
     static async createClient(rawData) {
         
-        const clientEntity = new Client(rawData);
-        const cleanData = clientEntity.getDadosSanitizados();
+        const cpfLimpo = rawData.cpf.replace(/\D/g, '');
+        const cpfHash = await EncryptionService.hash(cpfLimpo);
 
-        const existingClient = await SecureClientRepository.findByCpf(cleanData.cpf);
+        const existingClient = await SecureClientRepository.findByCpfHash(cpfHash);
         if (existingClient) {
             throw new Error('Não é possível concluir o cadastro. O CPF informado já existe no sistema.');
         }
+
+        const clientEntity = new Client(rawData);
+        const cleanData = clientEntity.getDadosSanitizados();
 
         await SecureClientRepository.create(cleanData);
         

@@ -8,15 +8,14 @@ export class SecureClientRepository {
      * Salva um cliente protegendo todos os seus dados.
      */
     static async create(clientData) {
-        
-        // 1. Gera o Hash SHA-256 do CPF (Usado pelo DB para barrar duplicidade)
-        const cpfHash = await EncryptionService.hash(clientData.cpf);
 
-        // 2. Criptografa os dados sensíveis usando AES-256-GCM
+        const cpfLimpo = clientData.cpf.replace(/\D/g, '');
+        const cpfHash = await EncryptionService.hash(cpfLimpo);
+
         const encryptedData = {
             nome_completo: await EncryptionService.encrypt(clientData.nome_completo),
-            cpf: await EncryptionService.encrypt(clientData.cpf), // Salva criptografado para exibir na tela depois
-            cpf_hash: cpfHash, // Usado apenas para busca e regra UNIQUE
+            cpf: await EncryptionService.encrypt(cpfLimpo),
+            cpf_hash: cpfHash,
             data_nascimento: await EncryptionService.encrypt(clientData.data_nascimento),
             telefone: await EncryptionService.encrypt(clientData.telefone),
             celular: await EncryptionService.encrypt(clientData.celular)
@@ -29,21 +28,27 @@ export class SecureClientRepository {
      * Retorna a lista de clientes, descriptografando-os em tempo real para a Interface.
      */
     static async findAll() {
-        const clientesEncrypted = await QueryBuilder.select(this.tableName);
-        
-        // Descriptografa todos os registros de forma assíncrona
-        const clientesDecrypted = await Promise.all(clientesEncrypted.map(async cliente => {
+
+        const rawData = await QueryBuilder.select(this.tableName);
+        console.log("📦 [REPO] Dados brutos do banco:", rawData);
+
+        const decryptedClients = await Promise.all(rawData.map(async (item) => {
+
+            const nome = await EncryptionService.decrypt(item.nome_completo);
+            const cpf = await EncryptionService.decrypt(item.cpf);
+            const tel = await EncryptionService.decrypt(item.celular);
+
+            console.log(`🔑 [REPO] Descriptografado ID ${item.id}:`, { nome, cpf, tel });
+
             return {
-                id: cliente.id,
-                nome_completo: await EncryptionService.decrypt(cliente.nome_completo),
-                cpf: await EncryptionService.decrypt(cliente.cpf),
-                data_nascimento: await EncryptionService.decrypt(cliente.data_nascimento),
-                telefone: await EncryptionService.decrypt(cliente.telefone),
-                celular: await EncryptionService.decrypt(cliente.celular)
+                id: item.id,
+                nome_completo: nome,
+                cpf: cpf,
+                celular: tel
             };
         }));
 
-        return clientesDecrypted;
+        return decryptedClients;
     }
 
     /**
@@ -54,6 +59,16 @@ export class SecureClientRepository {
         const result = await QueryBuilder.select(this.tableName, 'cpf_hash = ?', [cpfHash]);
         return result.length > 0 ? result[0] : null;
     }
+
+    /**
+     * Verifica se já existe um cliente com o mesmo hash de CPF.
+     */
+    static async findByCpfHash(cpfHash) {
+        const results = await QueryBuilder.select(this.tableName, 'cpf_hash = ?', [cpfHash]);
+        return results.length > 0 ? results[0] : null;
+    }
+
+
 
     static async findById(id) {
         const result = await QueryBuilder.select(this.tableName, 'id = ?', [id]);

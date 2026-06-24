@@ -89,11 +89,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/alasql@4.2.2/dist/alasql.min.js"></script>
     <script type="module">
+
+        import { DataConfig } from './src/core/database/DataConfig.js';
         import { ClientController } from './src/controllers/ClientController.js';
         import { AuthController } from './src/controllers/AuthController.js';
         import { SettingsController } from './src/controllers/SettingsController.js';
+        import { AuthService } from './src/services/AuthService.js';
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await DataConfig.init();
+            await AuthService.restoreSessionKey();
             ClientController.init();
             AuthController.init();
             SettingsController.init();

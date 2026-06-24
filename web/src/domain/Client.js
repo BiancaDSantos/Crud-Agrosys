@@ -1,4 +1,4 @@
-export class Cliente {
+export class Client {
 
     constructor({ nome_completo, cpf, data_nascimento, telefone, celular }) {
         this.nome_completo = nome_completo;

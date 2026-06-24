@@ -46,16 +46,15 @@ export class QueryBuilder {
      * @param {Array} params
      * @returns {Promise<Array>}
      */
-    static async select(tabela, condicoes = '', params = []) {
-        let sql = `SELECT * FROM ${tabela}`;
+    static async select(tableName, condition = '', params = []) {
+        const query = condition ? `SELECT * FROM ${tableName} WHERE ${condition}` : `SELECT * FROM ${tableName}`;
+        const rawResults = await alasql.promise(query, params);
         
-        if (condicoes) {
-            sql += ` WHERE ${condicoes}`;
-        }
+        if (!rawResults) return [];
         
-        return this.execute(sql, params);
+        return rawResults.map(wrapper => Object.values(wrapper)[0]);
+        
     }
-
     /**
      * UPDATE.
      * * @param {string} tabela
