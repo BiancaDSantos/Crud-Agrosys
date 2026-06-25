@@ -147,31 +147,12 @@ export class ClientController {
             const inputNascimento = document.getElementById('input-nascimento');
             const inputTelefone = document.getElementById('input-telefone');
 
-            if (inputNascimento) {
-                inputNascimento.value = cliente.data_nascimento || '';
-            }
+            if (inputNascimento) inputNascimento.value = cliente.data_nascimento || '';
+            if (inputTelefone)inputTelefone.value = cliente.telefone || '';
+            if (inputNome) inputNome.value = cliente.nome_completo;
+            if (inputCpf) inputCpf.value = cliente.cpf;
+            if (inputCelular) inputCelular.value = cliente.celular;
 
-            if (inputTelefone) {
-                inputTelefone.value = cliente.telefone || '';
-            }
-
-            if (inputNome) {
-                inputNome.value = cliente.nome_completo;
-            } else {
-                console.warn("⚠️ [UI] Input de nome não encontrado no HTML.");
-            }
-
-            if (inputCpf) {
-                inputCpf.value = cliente.cpf;
-            } else {
-                console.warn("⚠️ [UI] Input de CPF não encontrado no HTML.");
-            }
-
-            if (inputCelular) {
-                inputCelular.value = cliente.celular;
-            } else {
-                console.warn("⚠️ [UI] Input de celular não encontrado no HTML.");
-            }
 
             const formTitle = document.getElementById('form-title');
             if (formTitle) {
@@ -259,6 +240,7 @@ export class ClientController {
         const clientesPagina = this.clientesCache.slice(inicio, fim);
 
         clientesPagina.forEach(cliente => {
+
                 const tr = document.createElement('tr');
 
                 const idCliente = cliente.id;
@@ -337,6 +319,7 @@ export class ClientController {
     }
 
     static renderizarPaginacao() {
+
         const pagination = document.getElementById('clientes-pagination');
         const paginationInfo = document.getElementById('clientes-pagination-info');
 
@@ -445,6 +428,7 @@ export class ClientController {
     }
 
     static configurarLimitesDataNascimento() {
+
         const inputNascimento = document.getElementById('input-nascimento');
         if (!inputNascimento) return;
 
@@ -464,6 +448,7 @@ export class ClientController {
 
         inputNascimento.min = this.formatarDataParaInput(dataMinima);
         inputNascimento.max = this.formatarDataParaInput(dataMaxima);
+        
     }
 
     static formatarDataParaInput(data) {

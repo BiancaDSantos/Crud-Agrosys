@@ -1,9 +1,20 @@
 export class Address {
     
     constructor({
+
         cliente_id, 
-        cep, rua, numero, complemento, bairro, cidade, estado, pais, is_principal
+        cep,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        pais,
+        is_principal
+
     }) {
+        
         this.cliente_id = parseInt(cliente_id, 10);
         this.cep = cep;
         this.rua = rua;
@@ -15,9 +26,11 @@ export class Address {
         this.pais = pais || 'Brasil';
         this.is_principal = Boolean(is_principal);
         this.validate();
+
     }
 
     validate() {
+
         if (isNaN(this.cliente_id) || this.cliente_id <= 0) {
             throw new Error("Identificador do cliente inválido ou não informado.");
         }
@@ -41,9 +54,11 @@ export class Address {
                 throw new Error(`O campo obrigatório "${fieldName}" não pode estar vazio.`);
             }
         }
+
     }
 
     getDadosSanitizados() {
+
         return {
             cliente_id: this.cliente_id,
             cep: this.cep.replace(/\D/g, ''),
@@ -56,5 +71,6 @@ export class Address {
             pais: this.pais.trim(),
             is_principal: this.is_principal
         };
+
     }
 }

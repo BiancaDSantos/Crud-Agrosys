@@ -7,6 +7,7 @@ export class SessionManager {
     static #TIMEOUT_MS = 30 * 60 * 1000;
 
     static start() {
+
         this.resetTimer();
         
         const events = ['mousemove', 'keydown', 'click', 'scroll'];
@@ -15,10 +16,10 @@ export class SessionManager {
             document.addEventListener(event, this.resetTimer.bind(this), { passive: true });
         });
         
-        console.log("🛡️ Monitoramento de sessão ativo.");
     }
 
     static resetTimer() {
+
         if (this.#timeoutId) {
             clearTimeout(this.#timeoutId);
         }
@@ -32,16 +33,18 @@ export class SessionManager {
             console.warn("Sessão expirada por inatividade.");
             this.logout();
         }, this.#TIMEOUT_MS);
+
     }
 
     static logout() {
+        
         KeyManager.clearKey();
         SecureStorage.clear();
         
-        // Redireciona para a tela inicial (Login)
         if (!window.location.pathname.endsWith('index.html')) {
             alert("Sua sessão expirou por segurança. Faça login novamente.");
             window.location.href = 'index.html';
         }
+
     }
 }

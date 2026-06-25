@@ -2,11 +2,11 @@ export class SecureStorage {
     
     static setItem(key, value) {
         const payload = JSON.stringify(value);
-        // Aplica um Base64 simples apenas para não ficar legível a olho nu no DevTools
         sessionStorage.setItem(window.btoa(key), window.btoa(payload));
     }
 
     static getItem(key) {
+        
         const encodedKey = window.btoa(key);
         const data = sessionStorage.getItem(encodedKey);
         

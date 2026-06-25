@@ -4,9 +4,9 @@ export class EncryptionService {
     
     /**
      * Deriva uma chave AES-256 a partir de uma senha em texto plano.
-     * Utiliza PBKDF2 com 100.000 iterações (Padrão de segurança robusto).
+     * Utiliza PBKDF2 com 100.000 iterações 
      * @param {string} password 
-     * @param {string} salt (Pode ser o username do usuário)
+     * @param {string} salt
      * @returns {Promise<CryptoKey>}
      */
     static async deriveKey(password, salt) {
@@ -46,13 +46,13 @@ export class EncryptionService {
      * @returns {Promise<string>}
      */
     static async encrypt(text) {
+
         if (!text) return text;
         
         const key = KeyManager.getKey();
         const encoder = new TextEncoder();
         const encodedText = encoder.encode(text);
         
-        // O AES-GCM exige um Vetor de Inicialização (IV) único de 12 bytes para cada criptografia
         const iv = crypto.getRandomValues(new Uint8Array(12));
 
         const ciphertextBuffer = await crypto.subtle.encrypt(

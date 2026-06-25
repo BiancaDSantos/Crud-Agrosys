@@ -6,6 +6,7 @@ import { QueryBuilder } from '../core/database/QueryBuilder.js';
 export class AuthController {
 
     static init() {
+        
         const loginForm = document.getElementById('form-login');
         const registerForm = document.getElementById('form-register');
         const logoutBtn = document.getElementById('btn-logout');
@@ -21,12 +22,13 @@ export class AuthController {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', this.handleLogout.bind(this));
         }
+
     }
 
     static async handleLogin(event) {
+
         event.preventDefault();
         
-        // 1. Declaramos aqui para que toda a função possa acessar
         let userData = null; 
 
         const btnSubmit = event.target.querySelector('button[type="submit"]');
@@ -38,7 +40,7 @@ export class AuthController {
         };
 
         try {
-            // 2. Agora atribuímos o valor à variável que já existe no escopo da função
+
             userData = await AuthService.login(rawData);
 
             if (!userData) throw new Error('Credenciais inválidas.');
@@ -54,7 +56,7 @@ export class AuthController {
             }
 
         } catch (error) {
-            // 3. Agora, se algo der errado, podemos acessar userData ou tratar o erro com segurança
+
             console.error("Erro capturado:", error);
             this.#showFeedback(event.target, error.message, 'danger');
         } finally {

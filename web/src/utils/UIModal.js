@@ -25,6 +25,7 @@ export class UIModal {
 
     static async showConfirm(title, message, confirmText = 'Confirmar', btnType = 'danger') {
         return new Promise((resolve) => {
+            
             document.getElementById('dynamicModalTitle').innerHTML = title;
             document.getElementById('dynamicModalTitle').className = `modal-title fw-bold text-${btnType}`;
             document.getElementById('dynamicModalBody').innerHTML = message;
@@ -37,21 +38,20 @@ export class UIModal {
 
             this.getModal().show();
 
-            // Captura os cliques para resolver a Promise
             document.getElementById('btnModalConfirm').onclick = () => {
                 this.getModal().hide();
-                resolve(true); // O usuário disse SIM
+                resolve(true);
             };
 
             document.getElementById('btnModalCancel').onclick = () => {
-                resolve(false); // O usuário disse NÃO
+                resolve(false);
             };
 
-            // Se o usuário fechar o modal clicando fora ou no Xzinho
             document.getElementById('dynamicModal').addEventListener('hidden.bs.modal', function onHidden() {
                 document.getElementById('dynamicModal').removeEventListener('hidden.bs.modal', onHidden);
                 resolve(false); 
             });
+
         });
     }
 }
