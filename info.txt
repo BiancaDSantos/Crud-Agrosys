@@ -1,5 +1,7 @@
 # 🚀 Como Executar o Projeto (Agrosys)
 
+Usar o arquivo Json(backup_clientes_1782357890029.json) na raiz do projeto para importar dados para as tabelas, apenas o cliente João tem endereços do usuário Gui senha: 123456
+
 Este projeto utiliza **ES Modules** nativos do JavaScript (arquivos `.js` trabalhando com `import` e `export`). Por regras de segurança dos navegadores (CORS), o sistema **não funcionará** se você simplesmente der um duplo clique no arquivo `index.html` (protocolo `file://`).
 
 Para que os módulos sejam carregados corretamente, é obrigatório rodar o projeto através de um servidor local. Escolha uma das opções abaixo:
