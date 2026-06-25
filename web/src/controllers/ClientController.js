@@ -178,8 +178,6 @@ export class ClientController {
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } catch (error) {
-
-            console.error("Erro ao carregar cliente para edição:", error);
             UIModal.showAlert("Erro", "Falha ao carregar os dados do cliente.", "danger");
 
         }
@@ -448,7 +446,7 @@ export class ClientController {
 
         inputNascimento.min = this.formatarDataParaInput(dataMinima);
         inputNascimento.max = this.formatarDataParaInput(dataMaxima);
-        
+
     }
 
     static formatarDataParaInput(data) {

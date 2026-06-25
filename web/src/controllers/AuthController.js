@@ -6,22 +6,14 @@ import { QueryBuilder } from '../core/database/QueryBuilder.js';
 export class AuthController {
 
     static init() {
-        
+
         const loginForm = document.getElementById('form-login');
         const registerForm = document.getElementById('form-register');
         const logoutBtn = document.getElementById('btn-logout');
 
-        if (loginForm) {
-            loginForm.addEventListener('submit', this.handleLogin.bind(this));
-        }
-
-        if (registerForm) {
-            registerForm.addEventListener('submit', this.handleRegister.bind(this));
-        }
-
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', this.handleLogout.bind(this));
-        }
+        if (loginForm) loginForm.addEventListener('submit', this.handleLogin.bind(this));
+        if (registerForm) registerForm.addEventListener('submit', this.handleRegister.bind(this));
+        if (logoutBtn) logoutBtn.addEventListener('click', this.handleLogout.bind(this));
 
     }
 
@@ -42,7 +34,6 @@ export class AuthController {
         try {
 
             userData = await AuthService.login(rawData);
-
             if (!userData) throw new Error('Credenciais inválidas.');
 
             const userRecord = await QueryBuilder.execute(`SELECT id FROM usuarios WHERE username = '${userData.username}'`);
@@ -56,9 +47,7 @@ export class AuthController {
             }
 
         } catch (error) {
-
-            console.error("Erro capturado:", error);
-            this.#showFeedback(event.target, error.message, 'danger');
+            UIModal.showAlert("Falha no Login", error.message, "danger");  
         } finally {
             this.#setLoadingState(btnSubmit, false, originalText);
         }
@@ -76,24 +65,30 @@ export class AuthController {
 
             const confirmPassword = document.getElementById('register-confirm-password').value;
             if (rawData.password !== confirmPassword) {
-                alert("As senhas não coincidem.");
+                UIModal.showAlert("Atenção", "As senhas não coincidem.", "warning");
                 return;
             }
 
             const response = await AuthService.register(rawData);
 
-            alert("SUCESSO: " + response.message);
+            UIModal.showAlert("Sucesso", response.message, "success");
 
         } catch (error) {
-            console.error("🔴 ERRO CAPTURADO:", error);
             UIModal.showAlert("Atenção", error.message, "warning");
         }
     }
 
-    static handleLogout(event) {
+    static async handleLogout(event) {
         if (event) event.preventDefault();
 
-        if (confirm("Tem certeza que deseja sair da sessão de forma segura?")) {
+        const isConfirmed = await UIModal.showConfirm(
+            "Encerrar Sessão", 
+            "Tem certeza que deseja sair da sessão de forma segura?",
+            "Sim, Sair",
+            "danger"
+        );
+
+        if (isConfirmed) {
             AuthService.logout();
         }
     }
@@ -113,19 +108,4 @@ export class AuthController {
         }
     }
 
-
-    static #showFeedback(formElement, message, type = 'danger') {
-
-        const oldAlert = formElement.querySelector('.alert');
-        if (oldAlert) oldAlert.remove();
-
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} mt-3 mb-0`;
-        alertDiv.role = 'alert';
-        alertDiv.textContent = message;
-
-        formElement.appendChild(alertDiv);
-
-        setTimeout(() => alertDiv.remove(), 5000);
-    }
 }

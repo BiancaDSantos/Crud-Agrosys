@@ -1,5 +1,6 @@
 import { AddressService } from '../services/AddressService.js';
 import { BuscaCep } from '../core/api/BuscaCep.js';
+import { UIModal } from '../utils/UIModal.js';
 
 export class AddressController {
     
@@ -12,8 +13,10 @@ export class AddressController {
         this.clienteIdAtual = urlParams.get('clienteId');
 
         if (!this.clienteIdAtual || isNaN(parseInt(this.clienteIdAtual, 10))) {
-            alert("Nenhum cliente válido foi selecionado. Redirecionando...");
-            window.location.href = 'clientes.html'; 
+            UIModal.showAlert("Atenção", "Nenhum cliente válido foi selecionado. Redirecionando...", "warning");
+            setTimeout(() => {
+                window.location.href = 'clientes.html'; 
+            }, 2000);
             return;
         }
 
@@ -53,7 +56,7 @@ export class AddressController {
             const dados = await BuscaCep.buscarCep(cepDigitado);
             
             if (dados === null) {
-                alert("CEP não encontrado na base dos Correios. Por favor, preencha manualmente.");
+                UIModal.showAlert("Atenção", "CEP não encontrado na base dos Correios. Por favor, preencha manualmente.", "warning");
                 this.liberarCamposEndereco(true);
                 return;
             }
@@ -77,7 +80,7 @@ export class AddressController {
             
         } catch (error) {
 
-            alert(error.message);
+            UIModal.showAlert("Erro na Busca", error.message, "danger");
             this.liberarCamposEndereco(true);
             
         }
@@ -142,22 +145,23 @@ export class AddressController {
         try {
             if (editId) {
                 await AddressService.atualizarEndereco(editId, enderecoData);
-                alert('Endereço atualizado com sucesso!');
+                UIModal.showAlert("Sucesso", "Endereço atualizado com sucesso!", "success");
                 this.cancelarEdicao();
             } else {
                 await AddressService.criarEndereco(enderecoData);
-                alert('Endereço salvo com sucesso!');
+                UIModal.showAlert("Sucesso", "Endereço salvo com sucesso!", "success");
                 form.reset();
             }
 
             await this.carregarTabela();
             
         } catch (error) {
-            alert(`Erro: ${error.message}`);
+            UIModal.showAlert("Erro ao Salvar", error.message, "danger");
         }
     }
 
     static async carregarTabela() {
+
         const tbody = document.getElementById('tabela-enderecos-body');
         if (!tbody) return;
 
@@ -202,10 +206,11 @@ export class AddressController {
     }
 
     static carregarEnderecoParaEdicao(id) {
+
         const endereco = this.enderecosCache.find((item) => String(item.id) === String(id));
 
         if (!endereco) {
-            alert("Endereço não encontrado.");
+            UIModal.showAlert("Atenção", "Endereço não encontrado.", "warning");
             return;
         }
 
@@ -276,16 +281,21 @@ export class AddressController {
     }
 
     static async excluirEndereco(id) {
-        const confirmou = confirm("Tem certeza que deseja excluir este endereço?");
+        const confirmou = await UIModal.showConfirm(
+            "Excluir Endereço", 
+            "Tem certeza que deseja excluir este endereço?", 
+            "Sim, Excluir", 
+            "danger"
+        );
 
         if (!confirmou) return;
 
         try {
             await AddressService.excluirEndereco(id);
-            alert("Endereço excluído com sucesso!");
+            UIModal.showAlert("Sucesso", "Endereço excluído com sucesso!", "success");
             await this.carregarTabela();
         } catch (error) {
-            alert(`Erro ao excluir endereço: ${error.message}`);
+            UIModal.showAlert("Erro", `Erro ao excluir endereço: ${error.message}`, "danger");
         }
     }
 
