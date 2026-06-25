@@ -67,9 +67,6 @@ export class Client {
         }
     }
 
-    /**
-     * Algoritmo formal de validação de CPF
-     */
     isCpfValido(cpfRaw) {
         if (!cpfRaw) return false;
         

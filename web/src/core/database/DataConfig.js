@@ -22,9 +22,6 @@ export class DataConfig {
         }
     }
 
-    /**
-     * Cria as tabelas e garante as regras de negócio estruturais.
-     */
     static createTables() {
         // ==========================================
         // TABELA: USUÁRIOS
@@ -75,9 +72,6 @@ export class DataConfig {
         `);
     }
 
-    /**
-     * Carrega os dados persistidos no localStorage para dentro do AlaSQL.
-     */
     static loadFromStorage() {
         const savedDatabase = localStorage.getItem(this.storageKey);
 
@@ -107,9 +101,6 @@ export class DataConfig {
         }
     }
 
-    /**
-     * Persiste o estado atual das tabelas no localStorage.
-     */
     static persist() {
         const databaseDump = {
             usuarios: alasql('SELECT * FROM usuarios'),
@@ -120,9 +111,6 @@ export class DataConfig {
         localStorage.setItem(this.storageKey, JSON.stringify(databaseDump));
     }
 
-    /**
-     * Helper para limpar o banco.
-     */
     static clearDatabase() {
         alasql('DELETE FROM usuarios');
         alasql('DELETE FROM clientes');

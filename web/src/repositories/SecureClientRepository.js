@@ -3,20 +3,22 @@ import { QueryBuilder } from "../core/database/QueryBuilder.js";
 import { SecureStorage } from "../core/security/SecureStorage.js";
 
 export class SecureClientRepository {
+
     static tableName = 'clientes';
 
-    /**
-     * Salva um cliente protegendo todos os seus dados.
-     */
+    static #getUserId() {
+        const session = SecureStorage.getItem('currentUser');
+        return session?.id || session?.username || session;
+    }
+
     static async create(clientData) {
 
         const cpfLimpo = clientData.cpf.replace(/\D/g, '');
         const cpfHash = await EncryptionService.hash(cpfLimpo);
-
-        const currentUser = SecureStorage.getItem('currentUser');
+        const userId = this.#getUserId();
 
         const encryptedData = {
-            usuario_id: currentUser,
+            usuario_id: userId,
             nome_completo: await EncryptionService.encrypt(clientData.nome_completo),
             cpf: await EncryptionService.encrypt(cpfLimpo),
             cpf_hash: cpfHash,
@@ -28,18 +30,14 @@ export class SecureClientRepository {
         return QueryBuilder.insert(this.tableName, encryptedData);
     }
 
-    /**
-     * Retorna a lista de clientes, descriptografando-os em tempo real para a Interface.
-     */
     static async findAll() {
 
-        const currentUser = SecureStorage.getItem('currentUser');
-
+        const userId = this.#getUserId();
         const rawData = await QueryBuilder.select(this.tableName);
 
         if (!rawData || rawData.length === 0) return [];
 
-        const userClients = rawData.filter(client => client.usuario_id === currentUser);
+        const userClients = rawData.filter(client => String(client.usuario_id) === String(userId));
 
         const decryptedClients = await Promise.all(userClients.map(async (item) => {
             try {
@@ -69,40 +67,48 @@ export class SecureClientRepository {
         return decryptedClients.filter(client => client !== null);
     }
 
-    /**
-     * Verifica se já existe um cliente com o mesmo hash de CPF.
-     */
     static async findByCpfHash(cpfHash) {
 
-        const currentUser = SecureStorage.getItem('currentUser');
-        console.log(currentUser)
+        const userId = this.#getUserId();
         const allClients = await QueryBuilder.select(this.tableName);
 
         if (!allClients || allClients.length === 0) return null;
 
         const existingClient = allClients.find(client => 
-            client.cpf_hash === cpfHash && client.usuario_id === currentUser
+            client.cpf_hash === cpfHash && String(client.usuario_id) === String(userId)
         );
 
         return existingClient || null;
 
     }
 
-    /**
-     * Remove um cliente do banco de dados pelo seu ID.
-     */
     static async delete(hash) {
-        return await QueryBuilder.delete('clientes', `cpf_hash = '${hash}'`);
+
+        const registroAtual = await this.findByCpfHash(hash);
+
+        if (!registroAtual) {
+            throw new Error('Não foi possível excluir: cliente não encontrado ou você não tem permissão para removê-lo.');
+        }
+
+        const resultado = await QueryBuilder.delete('clientes', `id = ${Number(registroAtual.id)}`);
+
+        if (!resultado || resultado === 0) {
+            throw new Error('Não foi possível excluir o cliente: nenhum registro foi removido.');
+        }
+
+        return resultado;
     }
 
-    /**
-     * Atualiza os dados de um cliente existente, mantendo o isolamento de segurança.
-     */
     static async update(oldHash, clientData) {
 
         const cpfLimpo = clientData.cpf.replace(/\D/g, '');
         const novoCpfHash = await EncryptionService.hash(cpfLimpo);
-        const currentUser = SecureStorage.getItem('currentUser');
+        
+        const registroAtual = await this.findByCpfHash(oldHash);
+
+        if (!registroAtual) {
+            throw new Error('Não foi possível atualizar: cliente não encontrado ou você não tem permissão para alterá-lo.');
+        }
 
         const encryptedData = {
             nome_completo: await EncryptionService.encrypt(clientData.nome_completo),
@@ -113,11 +119,17 @@ export class SecureClientRepository {
             celular: await EncryptionService.encrypt(clientData.celular)
         };
 
-        return await QueryBuilder.update(
-            this.tableName, 
-            encryptedData, 
-            `cpf_hash = '${oldHash}' AND usuario_id = '${currentUser}'`
+        const resultado = await QueryBuilder.update(
+            this.tableName,
+            encryptedData,
+            `id = ${Number(registroAtual.id)}`
         );
+
+        if (!resultado || resultado === 0) {
+            throw new Error('Não foi possível atualizar o cliente: nenhum registro foi alterado.');
+        }
+
+        return resultado;
     }
     
 }

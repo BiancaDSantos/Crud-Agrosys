@@ -1,4 +1,3 @@
-
 import { QueryBuilder } from '../core/database/QueryBuilder.js';
 import { EncryptionService } from '../core/security/EncryptionService.js';
 
@@ -20,7 +19,7 @@ export class SecureAddressRepository {
     static async create(addressData) {
 
         const [
-             cepEncriptografado,
+            cepEncriptografado,
             ruaEcriptografado,
             numeroEncriptografado,
             complementoEncriptografado,
@@ -55,13 +54,57 @@ export class SecureAddressRepository {
         return QueryBuilder.insert(this.tableName, encryptedAddress);
     }
 
-    /**
-     * Busca os endereços vinculados a um cliente no banco de dados e descriptografa.
-     */
+    static async findById(id) {
+
+        const sanitizedId = this.#validateId(id);
+        const resultados = await QueryBuilder.select(this.tableName, 'id = ?', [sanitizedId]);
+
+        if (!resultados || resultados.length === 0) return null;
+
+        const end = resultados[0];
+
+        const [
+            cepDescriptografado,
+            ruaDescriptografado,
+            numeroDescriptografado,
+            complementoDescriptografado,
+            bairroDescriptografado,
+            cidadeDescriptografado,
+            estadoDescriptografado,
+            paisDescriptografado
+        ] = await Promise.all([
+            EncryptionService.decrypt(end.cep),
+            EncryptionService.decrypt(end.rua),
+            EncryptionService.decrypt(end.numero),
+            EncryptionService.decrypt(end.complemento),
+            EncryptionService.decrypt(end.bairro),
+            EncryptionService.decrypt(end.cidade),
+            EncryptionService.decrypt(end.estado),
+            EncryptionService.decrypt(end.pais)
+        ]);
+
+        return {
+            id: end.id,
+            cliente_id: end.cliente_id,
+            cep: cepDescriptografado,
+            rua: ruaDescriptografado,
+            numero: numeroDescriptografado,
+            complemento: complementoDescriptografado,
+            bairro: bairroDescriptografado,
+            cidade: cidadeDescriptografado,
+            estado: estadoDescriptografado,
+            pais: paisDescriptografado,
+            is_principal: end.is_principal
+        };
+    }
+
     static async findByClienteId(clienteId) {
 
         const sanitizedId = this.#validateClienteId(clienteId);
-        const enderecos = await QueryBuilder.select(this.tableName, 'cliente_id = ?', [sanitizedId]);
+        const todosOsEnderecos = await QueryBuilder.select(this.tableName);
+        const enderecos = (todosOsEnderecos || []).filter(
+            end => Number(end.cliente_id) === Number(sanitizedId)
+        );
 
         return Promise.all(enderecos.map(async (end) => {
 
@@ -102,7 +145,7 @@ export class SecureAddressRepository {
         }));
     }
 
-  static async update(id, addressData) {
+    static async update(id, addressData) {
         const sanitizedId = this.#validateId(id);
 
         const encryptedAddress = {

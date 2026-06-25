@@ -62,9 +62,18 @@
                 <div class="glass-card p-4 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold m-0"><i class="bi bi-list-task text-primary me-2"></i> Lista de Clientes</h5>
-                        <div>
+                        <div class="d-flex align-items-center">
                             <button id="btn-export-db" class="btn btn-sm btn-outline-secondary rounded-pill me-2"><i
                                     class="bi bi-cloud-download"></i> Exportar</button>
+
+                            <form id="form-import-db" class="m-0">
+                                <input type="file" id="input-file-db" accept="application/json" class="d-none"
+                                    onchange="this.closest('form').requestSubmit()">
+                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill"
+                                    onclick="event.preventDefault(); document.getElementById('input-file-db').click();">
+                                    <i class="bi bi-cloud-upload"></i> Importar
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -76,7 +85,6 @@
                                     <th>CPF</th>
                                     <th>Nascimento</th>
                                     <th>Contatos</th>
-                                    <th>Status</th>
                                     <th class="text-end">Ações</th>
                                 </tr>
                             </thead>

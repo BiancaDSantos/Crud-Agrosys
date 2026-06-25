@@ -6,13 +6,9 @@ export class SessionManager {
     static #timeoutId = null;
     static #TIMEOUT_MS = 30 * 60 * 1000;
 
-    /**
-     * Inicia o monitoramento de inatividade.
-     */
     static start() {
         this.resetTimer();
         
-        // Mapeia eventos que configuram "atividade" do usuário
         const events = ['mousemove', 'keydown', 'click', 'scroll'];
         
         events.forEach(event => {
@@ -22,15 +18,11 @@ export class SessionManager {
         console.log("🛡️ Monitoramento de sessão ativo.");
     }
 
-    /**
-     * Reseta o cronômetro de inatividade.
-     */
     static resetTimer() {
         if (this.#timeoutId) {
             clearTimeout(this.#timeoutId);
         }
 
-        // Se o usuário já perdeu a chave, não adianta resetar
         if (!KeyManager.hasKey() && SecureStorage.getItem('isAuthenticated')) {
             this.logout();
             return;
@@ -42,9 +34,6 @@ export class SessionManager {
         }, this.#TIMEOUT_MS);
     }
 
-    /**
-     * Finaliza a sessão com segurança, limpa tudo e desloga o usuário.
-     */
     static logout() {
         KeyManager.clearKey();
         SecureStorage.clear();

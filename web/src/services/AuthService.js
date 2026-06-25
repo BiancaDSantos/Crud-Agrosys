@@ -7,10 +7,10 @@ import { SessionManager } from '../core/security/SessionManager.js';
 
 export class AuthService {
 
-     /**
-     * Registra um novo usuário no sistema
-     * @param {Object} rawData
-     */
+    /**
+    * Registra um novo usuário no sistema
+    * @param {Object} rawData
+    */
     static async register(rawData) {
         try {
 
@@ -18,26 +18,26 @@ export class AuthService {
             const { username, password } = user.toJSON();
 
             const usernameHash = await EncryptionService.hash(username);
-            
+
             const existingUser = await SecureUserRepository.findByUsername(username);
             if (existingUser) {
                 throw new Error('Não foi possível realizar o cadastro. O nome de usuário já está em uso.');
             }
-            
+
             const salt = await EncryptionService.hash(username + Date.now().toString());
             const passwordHash = await EncryptionService.hash(password + salt);
-            
+
             const userData = {
                 username_hash: usernameHash,
                 username: username,
                 password_salt: salt,
                 password_hash: passwordHash
             };
-            
+
             await SecureUserRepository.create(userData);
-            
+
             return { success: true, message: "Usuário registrado com sucesso!" };
-            
+
         } catch (error) {
             console.error("Erro no registro:", error);
             throw error;
@@ -48,13 +48,20 @@ export class AuthService {
      * Realiza login do usuário
      * *@param {Object} rawData
      */
+    /**
+     * Realiza login do usuário
+     * @param {Object} rawData
+     */
     static async login(rawData) {
 
         const user = new User(rawData);
         const { username, password } = user.toJSON();
 
         const userData = await SecureUserRepository.findByUsername(username);
-        if (!userData) throw new Error('Credenciais inválidas.');
+
+        if (!userData) {
+            throw new Error('Credenciais inválidas.');
+        }
 
         const attemptedHash = await EncryptionService.hash(password + userData.password_salt);
         if (attemptedHash !== userData.password_hash) {
@@ -62,22 +69,17 @@ export class AuthService {
         }
 
         const cryptoKey = await EncryptionService.deriveKey(password, username);
-
         const exportedKey = await window.crypto.subtle.exportKey("jwk", cryptoKey);
-        SecureStorage.setItem('sessionKey', JSON.stringify(exportedKey));
 
+        SecureStorage.setItem('sessionKey', JSON.stringify(exportedKey));
         KeyManager.setKey(cryptoKey);
         SecureStorage.setItem('isAuthenticated', true);
         SecureStorage.setItem('currentUser', username);
+        
         SessionManager.start();
 
-        return { success: true, username };
-
+        return userData;
     }
-
-    /**
-     * Restaura a chave de criptografia da sessão após um reload de página
-     */
     static async restoreSessionKey() {
 
         const keyData = SecureStorage.getItem('sessionKey');
@@ -89,7 +91,7 @@ export class AuthService {
         try {
 
             const jwk = typeof keyData === 'string' ? JSON.parse(keyData) : keyData;
-            
+
             const cryptoKey = await window.crypto.subtle.importKey(
                 "jwk",
                 jwk,
@@ -97,7 +99,7 @@ export class AuthService {
                 true,
                 ["encrypt", "decrypt"]
             );
-            
+
             KeyManager.setKey(cryptoKey);
 
         } catch (error) {

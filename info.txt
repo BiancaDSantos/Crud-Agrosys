@@ -1,0 +1,18 @@
+# 🚀 Como Executar o Projeto (Agrosys)
+
+Este projeto utiliza **ES Modules** nativos do JavaScript (arquivos `.js` trabalhando com `import` e `export`). Por regras de segurança dos navegadores (CORS), o sistema **não funcionará** se você simplesmente der um duplo clique no arquivo `index.html` (protocolo `file://`).
+
+Para que os módulos sejam carregados corretamente, é obrigatório rodar o projeto através de um servidor local. Escolha uma das opções abaixo:
+
+---
+
+## ⚡ Opção 1: Renderizando com o Vite (Recomendado)
+
+O Vite é um servidor de desenvolvimento moderno e extremamente rápido. Ele é ideal para este projeto.
+
+**Pré-requisito:** Ter o [Node.js](https://nodejs.org/) instalado na máquina.
+
+1. Abra o terminal na pasta raiz do projeto.
+2. Execute o comando abaixo para rodar o Vite sob demanda (não precisa instalar dependências fixas):
+   ```bash
+   npx vite

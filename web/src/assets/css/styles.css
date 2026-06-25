@@ -336,3 +336,84 @@ body {
         min-width: 980px;
     }
 }
+
+/* ==========================================
+   ✨ ESTILO DO CABEÇALHO DA TABELA (Desktop)
+   ========================================== */
+.table thead th,
+.clients-table thead th {
+    border: none !important;
+    background: #f8fafc !important; /* Cor cinza super suave e moderna */
+    color: #64748b;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1rem;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+/* ==========================================
+   📱 RESPONSIVIDADE: TABELAS PARA CARDS (Mobile)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Esconde o cabeçalho original no celular */
+    .table thead {
+        display: none;
+    }
+
+    /* Converte a estrutura da tabela para blocos */
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    /* Estiliza cada Linha (TR) como um Card */
+    .table tbody tr {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+        border: 1px solid #f1f5f9;
+        transition: transform 0.25s ease;
+    }
+
+    /* Estiliza cada Célula (TD) dentro do Card */
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border: none !important;
+        border-bottom: 1px solid #f8fafc !important;
+        text-align: right;
+    }
+
+    /* Remove arredondamentos específicos de desktop que quebram o layout mobile */
+    .clients-table tbody td:first-child,
+    .clients-table tbody td:last-child {
+        border-radius: 0;
+    }
+
+    /* Linha dos botões de ação (última célula) */
+    .table tbody td:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px dashed #e2e8f0 !important;
+        justify-content: flex-end; /* Joga os botões para a direita */
+        gap: 0.5rem;
+    }
+
+    /* Rótulos dinâmicos indicando o que é cada dado no mobile */
+    .table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        text-align: left;
+        margin-right: 1rem;
+    }
+}

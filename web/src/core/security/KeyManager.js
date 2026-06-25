@@ -21,17 +21,11 @@ export class KeyManager {
         return this.#cryptoKey;
     }
 
-    /**
-     * Destrói a chave da memória (usado no logout ou timeout).
-     */
     static clearKey() {
         this.#cryptoKey = null;
         console.log("🔒 Chave de criptografia destruída da memória.");
     }
 
-    /**
-     * Verifica se o usuário tem uma chave ativa.
-     */
     static hasKey() {
         return this.#cryptoKey !== null;
     }

@@ -1,12 +1,10 @@
 import { AuthService } from '../services/AuthService.js';
 import { UIModal } from '../utils/UIModal.js';
+import { SecureStorage } from "../core/security/SecureStorage.js";
+import { QueryBuilder } from '../core/database/QueryBuilder.js';
 
 export class AuthController {
 
-    /**
-     * Inicializa os ouvintes de eventos da tela de Login/Cadastro.
-     * Deve ser chamado no DOMContentLoaded do index.html.
-     */
     static init() {
         const loginForm = document.getElementById('form-login');
         const registerForm = document.getElementById('form-register');
@@ -25,11 +23,11 @@ export class AuthController {
         }
     }
 
-    /**
-     * Processa a tentativa de Login.
-     */
     static async handleLogin(event) {
         event.preventDefault();
+        
+        // 1. Declaramos aqui para que toda a função possa acessar
+        let userData = null; 
 
         const btnSubmit = event.target.querySelector('button[type="submit"]');
         const originalText = this.#setLoadingState(btnSubmit, true);
@@ -40,13 +38,24 @@ export class AuthController {
         };
 
         try {
-            // Delega a regra de negócio e derivação de chave para o Service
-            await AuthService.login(rawData);
+            // 2. Agora atribuímos o valor à variável que já existe no escopo da função
+            userData = await AuthService.login(rawData);
 
-            // Login de sucesso: Redireciona para o painel de clientes
-            window.location.href = 'clientes.html';
+            if (!userData) throw new Error('Credenciais inválidas.');
+
+            const userRecord = await QueryBuilder.execute(`SELECT id FROM usuarios WHERE username = '${userData.username}'`);
+            
+            if (userRecord && userRecord.length > 0) {
+                const userToSave = { id: userRecord[0].id, username: userData.username };
+                SecureStorage.setItem('currentUser', userToSave);
+                window.location.href = 'clientes.html';
+            } else {
+                throw new Error('Usuário não encontrado na base.');
+            }
 
         } catch (error) {
+            // 3. Agora, se algo der errado, podemos acessar userData ou tratar o erro com segurança
+            console.error("Erro capturado:", error);
             this.#showFeedback(event.target, error.message, 'danger');
         } finally {
             this.#setLoadingState(btnSubmit, false, originalText);
@@ -87,13 +96,7 @@ export class AuthController {
         }
     }
 
-    // ==========================================
-    // 🎨 MÉTODOS UTILITÁRIOS (UX & UI)
-    // ==========================================
 
-    /**
-     * Desabilita o botão e mostra um spinner durante o processamento (ex: geração do Hash).
-     */
     static #setLoadingState(button, isLoading, originalText = '') {
         if (!button) return '';
 
@@ -108,15 +111,12 @@ export class AuthController {
         }
     }
 
-    /**
-     * Injeta um alerta do Bootstrap abaixo do formulário para dar feedback ao usuário.
-     */
+
     static #showFeedback(formElement, message, type = 'danger') {
-        // Remove alertas antigos
+
         const oldAlert = formElement.querySelector('.alert');
         if (oldAlert) oldAlert.remove();
 
-        // Cria o novo alerta
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type} mt-3 mb-0`;
         alertDiv.role = 'alert';
@@ -124,7 +124,6 @@ export class AuthController {
 
         formElement.appendChild(alertDiv);
 
-        // Remove automaticamente após 5 segundos
         setTimeout(() => alertDiv.remove(), 5000);
     }
 }

@@ -8,10 +8,7 @@ export class ClientController {
     static clientesCache = [];
     static cpfsVisiveis = new Set();
 
-    /**
-     * Inicializa os ouvintes de eventos da tela de Clientes.
-     * Deve ser chamado assim que o DOM carregar.
-     */
+
     static init() {
 
         this.configurarLimitesDataNascimento();
@@ -71,9 +68,6 @@ export class ClientController {
         }
     }
 
-    /**
-     * Captura os dados do formulário e delega a criação ao Service.
-     */
     static async salvarCliente(event) {
 
         event.preventDefault();
@@ -117,9 +111,6 @@ export class ClientController {
         }
     }
 
-        /**
-     * Cancela o modo de edição, limpando o formulário e restaurando o estado original.
-     */
     static cancelarEdicao() {
 
         const form = document.getElementById('form-cliente');
@@ -139,9 +130,6 @@ export class ClientController {
 
     }
 
-    /**
-     * Prepara o formulário para a edição de um cliente existente.
-     */
     static async carregarClienteParaEdicao(hash) {
         try {
 
@@ -327,13 +315,6 @@ export class ClientController {
                     </div>
                 </td>
 
-                <td>
-                    <span class="status-pill">
-                        <i class="bi bi-check-circle-fill"></i>
-                        Ativo
-                    </span>
-                </td>
-
                 <td class="text-end">
                     <div class="action-buttons">
                         <a href="addresses.html?clienteId=${idCliente}" class="btn btn-sm btn-outline-primary" title="Endereços">
@@ -408,9 +389,6 @@ export class ClientController {
         `);
     }
 
-    /**
-     * Formata uma string de CPF (apenas números) para o padrão visual.
-     */
     static formatarCpfVisual(cpf) {
         if (!cpf) return 'Não informado';
 

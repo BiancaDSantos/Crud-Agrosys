@@ -1,4 +1,5 @@
 import { DataSyncService } from '../services/DataSyncService.js';
+import { SecureStorage } from '../core/security/SecureStorage.js';
 import { AuthService } from '../services/AuthService.js';
 
 export class SettingsController {
@@ -16,35 +17,28 @@ export class SettingsController {
         }
     }
 
-    /**
-     * Aciona o download do JSON com os dados do AlaSQL.
-     */
-    static async handleExport(event) {
-        event.preventDefault();
-        
-        const btn = event.target;
-        const originalText = btn.innerHTML;
-        
+
+    static async handleExport() {
         try {
-            btn.disabled = true;
-            btn.innerHTML = '⚙️ Gerando Backup...';
             
-            await DataSyncService.exportDatabase();
+            const usuarioLogado = SecureStorage.getItem('currentUser'); 
             
-            // Sucesso
-            alert("Backup exportado com sucesso! Verifique sua pasta de downloads.");
+            const usuarioId = usuarioLogado?.id || usuarioLogado?.username || usuarioLogado;
+
+            if (!usuarioId) {
+                alert("Usuário não identificado na sessão.");
+                return;
+            }
+
+            await DataSyncService.exportDatabase(usuarioId);
+            alert("Exportação realizada com sucesso!");
             
         } catch (error) {
-            alert(error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+            console.error("Erro ao exportar:", error);
+            alert("Falha na exportação: " + error.message);
         }
     }
 
-    /**
-     * Lê o arquivo JSON selecionado e sobrescreve o banco local.
-     */
     static async handleImport(event) {
         event.preventDefault();
 
@@ -57,7 +51,8 @@ export class SettingsController {
         }
 
         // ⚠️ Barreira de Segurança / Confirmação Crítica
-        const warning = "ATENÇÃO: Importar um novo banco de dados apagará todos os clientes e endereços atuais. \n\nVocê será desconectado e precisará usar as credenciais da base importada. \n\nDeseja continuar?";
+        const warning = "ATENÇÃO: Importar um novo banco de dados apagará todos os clientes e endereços atuais. " + 
+            "\n\nVocê será desconectado e precisará usar as credenciais da base importada. \n\nDeseja continuar?";
         
         if (!confirm(warning)) {
             fileInput.value = ''; // Limpa o input
@@ -73,9 +68,8 @@ export class SettingsController {
 
             const response = await DataSyncService.importDatabase(file);
             
-            alert(response.message); // Exibe mensagem de sucesso
+            alert(response.message);
             
-            // Destrói a chave AES antiga e limpa a sessão nativamente
             AuthService.logout();
 
         } catch (error) {

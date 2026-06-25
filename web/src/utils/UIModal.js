@@ -1,9 +1,7 @@
 export class UIModal {
     static modalInstance = null;
 
-    /**
-     * Inicializa a instância do modal do Bootstrap.
-     */
+
     static getModal() {
         if (!this.modalInstance) {
             const modalElement = document.getElementById('dynamicModal');
@@ -12,9 +10,6 @@ export class UIModal {
         return this.modalInstance;
     }
 
-    /**
-     * Exibe um modal de Alerta simples (Substitui o alert).
-     */
     static showAlert(title, message, type = 'primary') {
         document.getElementById('dynamicModalTitle').innerHTML = title;
         document.getElementById('dynamicModalTitle').className = `modal-title fw-bold text-${type}`;
@@ -28,10 +23,6 @@ export class UIModal {
         this.getModal().show();
     }
 
-    /**
-     * Exibe um modal de Confirmação (Substitui o confirm).
-     * Retorna uma Promise que resolve como true (confirmou) ou false (cancelou).
-     */
     static async showConfirm(title, message, confirmText = 'Confirmar', btnType = 'danger') {
         return new Promise((resolve) => {
             document.getElementById('dynamicModalTitle').innerHTML = title;

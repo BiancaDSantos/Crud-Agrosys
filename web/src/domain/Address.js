@@ -1,6 +1,9 @@
 export class Address {
     
-    constructor({ cliente_id, cep, rua, bairro, cidade, estado, pais, is_principal }) {
+    constructor({
+        cliente_id, 
+        cep, rua, numero, complemento, bairro, cidade, estado, pais, is_principal
+    }) {
         this.cliente_id = parseInt(cliente_id, 10);
         this.cep = cep;
         this.rua = rua;
@@ -14,7 +17,7 @@ export class Address {
         this.validate();
     }
 
-    alidate() {
+    validate() {
         if (isNaN(this.cliente_id) || this.cliente_id <= 0) {
             throw new Error("Identificador do cliente inválido ou não informado.");
         }

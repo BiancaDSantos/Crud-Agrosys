@@ -33,8 +33,23 @@ export class AddressService {
         const addressEntity = new Address(rawData);
         const cleanData = addressEntity.getDadosSanitizados();
 
+        const enderecoAtual = await SecureAddressRepository.findById(id);
+
         if (cleanData.is_principal) {
+            // Este endereço será o novo principal: remove a flag dos demais.
             await SecureAddressRepository.removePrincipalFlag(cleanData.cliente_id);
+        } else if (enderecoAtual && enderecoAtual.is_principal) {
+            // O usuário está desmarcando o que hoje é o principal.
+            const todosEnderecos = await SecureAddressRepository.findByClienteId(cleanData.cliente_id);
+            const existeOutro = todosEnderecos.some(end => String(end.id) !== String(id));
+
+            if (!existeOutro) {
+                // É o único endereço do cliente: não pode deixar de ser principal.
+                cleanData.is_principal = true;
+            }
+            // Se existe outro endereço, a desmarcação é permitida, mas isso deixaria
+            // o cliente sem endereço principal — por isso a UI deveria promover outro
+            // endereço explicitamente em vez de simplesmente desmarcar este.
         }
 
         await SecureAddressRepository.update(id, cleanData);
@@ -47,7 +62,21 @@ export class AddressService {
             throw new Error("Identificador do endereço não informado.");
         }
 
+        const enderecoExcluido = await SecureAddressRepository.findById(id);
+
         await SecureAddressRepository.delete(id);
+
+        if (enderecoExcluido && enderecoExcluido.is_principal) {
+            const restantes = await SecureAddressRepository.findByClienteId(enderecoExcluido.cliente_id);
+
+            if (restantes.length > 0) {
+                const proximoPrincipal = restantes[0];
+                await SecureAddressRepository.update(proximoPrincipal.id, {
+                    ...proximoPrincipal,
+                    is_principal: true
+                });
+            }
+        }
 
         return { success: true };
     }

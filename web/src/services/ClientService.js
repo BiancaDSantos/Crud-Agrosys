@@ -26,9 +26,6 @@ export class ClientService {
         return { success: true };
     }
 
-    /**
-     * Retorna a lista de clientes com os dados já descriptografados pelo Repositório.
-     */
     static async listarClientes() {
         return SecureClientRepository.findAll();
     }
@@ -42,10 +39,7 @@ export class ClientService {
         await SecureClientRepository.delete(hash);
         return { success: true };
     }
-
-    /**
-     * Orquestra a atualização de um cliente.
-     */
+    
     static async atualizarCliente(oldHash, rawData) {
         
         const clientEntity = new Client(rawData);
