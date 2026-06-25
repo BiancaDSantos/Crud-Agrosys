@@ -1,0 +1,167 @@
+{
+  "version": "1.0",
+  "exportDate": "2026-06-25T03:24:50.029Z",
+  "usuarioExportacao": 2,
+  "data": {
+    "clientes": [
+      {
+        "id": 10,
+        "usuario_id": 2,
+        "nome_completo": "Dr. Enzo Ferreira",
+        "cpf_hash": "88c1ee1fcb125c1760e9424b08accc892e0b848dc60df1b1e955e1ec2a807876",
+        "cpf": "75713681033",
+        "data_nascimento": "2000-01-30",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": []
+      },
+      {
+        "id": 11,
+        "usuario_id": 2,
+        "nome_completo": "Maria Clara Oliveira",
+        "cpf_hash": "cd77a2d75b5784c2e3ce28cb348262922f2f8f4e1af91faa4e05de881bef2319",
+        "cpf": "48738492091",
+        "data_nascimento": "1977-05-02",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": []
+      },
+      {
+        "id": 12,
+        "usuario_id": 2,
+        "nome_completo": "João Pedro Silva",
+        "cpf_hash": "c778739e85c12c853497a5def12d745b4c1876c3950c2c85c114f2b9da117797",
+        "cpf": "21067575065",
+        "data_nascimento": "1966-05-02",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": [
+          {
+            "id": 6,
+            "cliente_id": 12,
+            "cep": "88821664",
+            "rua": "Rua Abelle Colle",
+            "numero": "53",
+            "complemento": "",
+            "bairro": "Cristo Rei",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": true
+          },
+          {
+            "id": 7,
+            "cliente_id": 12,
+            "cep": "88828150",
+            "rua": "Rua Abramo Biff",
+            "numero": "56",
+            "complemento": "",
+            "bairro": "Aurora",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          },
+          {
+            "id": 8,
+            "cliente_id": 12,
+            "cep": "88820440",
+            "rua": "Rua Adão Stano",
+            "numero": "78",
+            "complemento": "",
+            "bairro": "Jaqueline",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          },
+          {
+            "id": 9,
+            "cliente_id": 12,
+            "cep": "88822822",
+            "rua": "Rua Adelina Fagundes dos Santos",
+            "numero": "123",
+            "complemento": "",
+            "bairro": "Demboski",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          },
+          {
+            "id": 10,
+            "cliente_id": 12,
+            "cep": "88822332",
+            "rua": "Rua Ademar Brunel",
+            "numero": "5664a",
+            "complemento": "",
+            "bairro": "Liri",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          },
+          {
+            "id": 11,
+            "cliente_id": 12,
+            "cep": "88823232",
+            "rua": "Rua Adelino Meincheim",
+            "numero": "564",
+            "complemento": "",
+            "bairro": "Nossa Senhora de Fátima",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          },
+          {
+            "id": 12,
+            "cliente_id": 12,
+            "cep": "88822288",
+            "rua": "Rua Ademar Selinger",
+            "numero": "897",
+            "complemento": "",
+            "bairro": "Liri",
+            "cidade": "Içara",
+            "estado": "SC",
+            "pais": "Brasil",
+            "is_principal": false
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "usuario_id": 2,
+        "nome_completo": "Ana Beatriz Santos",
+        "cpf_hash": "2e3f0c91cb009e9b0916a7bc0cd80546f3e1ac72b04e020d558687a46bc9bf63",
+        "cpf": "37661424029",
+        "data_nascimento": "1988-02-10",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": []
+      },
+      {
+        "id": 14,
+        "usuario_id": 2,
+        "nome_completo": "José Carlos Costa",
+        "cpf_hash": "b36cbe5d17b360e47c5fbda3168b06a74096e569ad7b3004c0adbde7fe7c22a3",
+        "cpf": "48336163000",
+        "data_nascimento": "1999-07-15",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": []
+      },
+      {
+        "id": 15,
+        "usuario_id": 2,
+        "nome_completo": "Laura Fernanda Lima",
+        "cpf_hash": "4fa3d63fe8ef010530c342fc08f34ca84f9245b54ad1fa756fc54e9f2dcb4cea",
+        "cpf": "87592841029",
+        "data_nascimento": "2002-02-20",
+        "telefone": "4896218574",
+        "celular": "48996218574",
+        "enderecos": []
+      }
+    ]
+  }
+}
